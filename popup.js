@@ -113,7 +113,7 @@ function displayScreenshots(captures) {
 
       // Add table headers
       const headerRow = document.createElement("tr");
-      const headers = ["Field", "Response 1", "Response 2", "Status"];
+      const headers = ["Field", "Desna", "TNA", "AusPayNet", "Status"];
       headers.forEach(headerText => {
           const header = document.createElement("th");
           header.textContent = headerText;
@@ -139,6 +139,10 @@ function displayScreenshots(captures) {
               const response2Cell = document.createElement("td");
               response2Cell.textContent = value[1] || "N/A";
               row.appendChild(response2Cell);
+
+              const response3Cell = document.createElement("td");
+              response3Cell.textContent = value[2] || "N/A";
+              row.appendChild(response3Cell);
 
               const statusCell = document.createElement("td");
               statusCell.textContent = "mismatch";
@@ -167,6 +171,10 @@ function displayScreenshots(captures) {
               response2Cell.textContent = value[1] || "N/A";
               row.appendChild(response2Cell);
 
+              const response3Cell = document.createElement("td");
+              response3Cell.textContent = value[2] || "N/A";
+              row.appendChild(response3Cell);
+
               const statusCell = document.createElement("td");
               statusCell.textContent = "match";
               statusCell.style.color = "#2c853c";
@@ -193,7 +201,7 @@ function displayScreenshots(captures) {
   chrome.storage.local.get("captures", (data) => {
     const captures = data.captures || [];
     displayScreenshots(captures);
-    if (captures.length >= 2) {
+    if (captures.length >= 3) {
       document.getElementById("compare-btn").disabled = false;
     }
   });
@@ -216,7 +224,7 @@ function displayScreenshots(captures) {
         const captures = data.captures || [];
         captures.push(result.data);
         chrome.storage.local.set({ captures }, () => {
-          if (captures.length >= 2) {
+          if (captures.length >= 3) {
             document.getElementById("compare-btn").disabled = false;
           }
           console.log("Full-page capture saved:", result.data);
