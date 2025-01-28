@@ -117,6 +117,7 @@ function displayScreenshots(captures) {
       headers.forEach(headerText => {
           const header = document.createElement("th");
           header.textContent = headerText;
+          header.style.fontWeight = "bold";
           headerRow.appendChild(header);
       });
       table.appendChild(headerRow);
@@ -141,7 +142,7 @@ function displayScreenshots(captures) {
 
               const statusCell = document.createElement("td");
               statusCell.textContent = "mismatch";
-              statusCell.style.color = "red";
+              statusCell.style.color = "#c20000";
               row.appendChild(statusCell);
 
               table.appendChild(row);
@@ -168,7 +169,7 @@ function displayScreenshots(captures) {
 
               const statusCell = document.createElement("td");
               statusCell.textContent = "match";
-              statusCell.style.color = "green";
+              statusCell.style.color = "#2c853c";
               row.appendChild(statusCell);
 
               table.appendChild(row);
