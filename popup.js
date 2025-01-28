@@ -2,6 +2,8 @@ function adjustPopupSize() {
     const body = document.body;
     const html = document.documentElement;
 
+    document.getElementsByClassName("container")[0].style.width = "400px";
+
     const height = Math.max(
         body.scrollHeight,
         body.offsetHeight,
@@ -103,7 +105,7 @@ function displayScreenshots(captures) {
       // Add a row for the status
       const statusRow = document.createElement("tr");
       const statusCell = document.createElement("td");
-      statusCell.setAttribute("colspan", "4"); // Span across all columns
+      statusCell.setAttribute("colspan", "5"); // Span across all columns
       statusCell.textContent = `Status: ${result.comparison_result.Status}`;
       statusCell.style.fontWeight = "bold";
       statusCell.style.textAlign = "center";
@@ -195,7 +197,10 @@ function displayScreenshots(captures) {
           downloadResults(result, "comparison_result.json");
       });
       resultContainer.appendChild(downloadBtn);
+
+      document.getElementsByClassName("container")[0].style.width = "700px";
   }
+
 
   // Load captures from storage when the popup opens
   chrome.storage.local.get("captures", (data) => {
@@ -279,3 +284,4 @@ function displayScreenshots(captures) {
       console.log("Captures cleared.");
     });
   });
+
