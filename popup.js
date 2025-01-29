@@ -94,112 +94,82 @@ function displayScreenshots(captures) {
   }
 
 //  Function to display comparison results in a table
-  function displayComparisonResults(result) {
-      const resultContainer = document.getElementById("result");
-      resultContainer.innerHTML = ""; // Clear previous content
+function displayComparisonResults(result) {
+  const resultContainer = document.getElementById("result");
+  resultContainer.innerHTML = "";
 
-      // Create a table element
-      const table = document.createElement("table");
-      table.classList.add("result-table");
+  const table = document.createElement("table");
+  table.classList.add("result-table");
 
-      // Add a row for the status
-      const statusRow = document.createElement("tr");
+  // Add status row
+  const statusRow = document.createElement("tr");
+  const statusCell = document.createElement("td");
+  statusCell.setAttribute("colspan", "5");
+  statusCell.textContent = `Status: ${result.comparison_result.status}`;  // Changed from Status to status
+  statusCell.style.fontWeight = "bold";
+  statusCell.style.textAlign = "center";
+  statusCell.style.fontSize = "1.3em";
+  statusRow.appendChild(statusCell);
+  table.appendChild(statusRow);
+
+  // Add headers
+  const headerRow = document.createElement("tr");
+  const headers = ["Field", "Desna", "TNA", "AusPayNet", "Status"];
+  headers.forEach(headerText => {
+      const header = document.createElement("th");
+      header.textContent = headerText;
+      header.style.fontWeight = "bold";
+      headerRow.appendChild(header);
+  });
+  table.appendChild(headerRow);
+
+  // Get all unique fields from both matching and mismatched fields
+  const allFields = new Set([
+      ...Object.keys(result.comparison_result.mismatched_fields || {}),
+      ...Object.keys(result.comparison_result.matching_fields || {})
+  ]);
+
+  // Add rows for all fields
+  allFields.forEach(field => {
+      const row = document.createElement("tr");
+      const isMatch = field in (result.comparison_result.matching_fields || {});
+      row.style.backgroundColor = isMatch ? "#f0fff0" : "#fff0f0";
+
+      // Add field name
+      const fieldCell = document.createElement("td");
+      fieldCell.textContent = field;
+      row.appendChild(fieldCell);
+
+      // Add values from each response
+      const responses = [result.response1, result.response2, result.response3];
+      responses.forEach(response => {
+          const cell = document.createElement("td");
+          cell.textContent = response[field] || "N/A";
+          row.appendChild(cell);
+      });
+
+      // Add status
       const statusCell = document.createElement("td");
-      statusCell.setAttribute("colspan", "5"); // Span across all columns
-      statusCell.textContent = `Status: ${result.comparison_result.Status}`;
-      statusCell.style.fontWeight = "bold";
-      statusCell.style.textAlign = "center";
-      statusCell.style.fontSize = "1.3em";
-      statusRow.appendChild(statusCell);
-      table.appendChild(statusRow);
+      statusCell.textContent = isMatch ? "match" : "mismatch";
+      statusCell.style.color = isMatch ? "#2c853c" : "#c20000";
+      row.appendChild(statusCell);
 
-      // Add table headers
-      const headerRow = document.createElement("tr");
-      const headers = ["Field", "Desna", "TNA", "AusPayNet", "Status"];
-      headers.forEach(headerText => {
-          const header = document.createElement("th");
-          header.textContent = headerText;
-          header.style.fontWeight = "bold";
-          headerRow.appendChild(header);
-      });
-      table.appendChild(headerRow);
+      table.appendChild(row);
+  });
 
-      // Add rows for mismatched fields
-      if (result.comparison_result.mismatched_fields) {
-          Object.entries(result.comparison_result.mismatched_fields).forEach(([key, value]) => {
-              const row = document.createElement("tr");
-              row.style.backgroundColor = "#fff0f0"; // Light red for mismatches
+  resultContainer.appendChild(table);
 
-              const fieldCell = document.createElement("td");
-              fieldCell.textContent = key;
-              row.appendChild(fieldCell);
+  // Add download button
+  const downloadBtn = document.createElement("button");
+  downloadBtn.innerText = "Download Results";
+  downloadBtn.classList.add("download-btn");
+  downloadBtn.addEventListener("click", () => {
+      downloadResults(result, "comparison_result.json");
+  });
+  resultContainer.appendChild(downloadBtn);
 
-              const response1Cell = document.createElement("td");
-              response1Cell.textContent = value[0] || "N/A";
-              row.appendChild(response1Cell);
-
-              const response2Cell = document.createElement("td");
-              response2Cell.textContent = value[1] || "N/A";
-              row.appendChild(response2Cell);
-
-              const response3Cell = document.createElement("td");
-              response3Cell.textContent = value[2] || "N/A";
-              row.appendChild(response3Cell);
-
-              const statusCell = document.createElement("td");
-              statusCell.textContent = "mismatch";
-              statusCell.style.color = "#c20000";
-              row.appendChild(statusCell);
-
-              table.appendChild(row);
-          });
-      }
-
-      // Add rows for matching fields
-      if (result.comparison_result.matching_fields) {
-          Object.entries(result.comparison_result.matching_fields).forEach(([key, value]) => {
-              const row = document.createElement("tr");
-              row.style.backgroundColor = "#f0fff0"; // Light green for matches
-
-              const fieldCell = document.createElement("td");
-              fieldCell.textContent = key;
-              row.appendChild(fieldCell);
-
-              const response1Cell = document.createElement("td");
-              response1Cell.textContent = value[0] || "N/A";
-              row.appendChild(response1Cell);
-
-              const response2Cell = document.createElement("td");
-              response2Cell.textContent = value[1] || "N/A";
-              row.appendChild(response2Cell);
-
-              const response3Cell = document.createElement("td");
-              response3Cell.textContent = value[2] || "N/A";
-              row.appendChild(response3Cell);
-
-              const statusCell = document.createElement("td");
-              statusCell.textContent = "match";
-              statusCell.style.color = "#2c853c";
-              row.appendChild(statusCell);
-
-              table.appendChild(row);
-          });
-      }
-
-      // Append the table to the result container
-      resultContainer.appendChild(table);
-
-      // Add a download button for the results
-      const downloadBtn = document.createElement("button");
-      downloadBtn.innerText = "Download Results";
-      downloadBtn.classList.add("download-btn");
-      downloadBtn.addEventListener("click", () => {
-          downloadResults(result, "comparison_result.json");
-      });
-      resultContainer.appendChild(downloadBtn);
-
-      document.getElementsByClassName("container")[0].style.width = "700px";
-  }
+  document.getElementsByClassName("container")[0].style.width = "700px";
+}
 
 
   // Load captures from storage when the popup opens
